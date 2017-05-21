@@ -49,7 +49,7 @@ class SpreadsheetManager:
 
             self.pipeline.append(None)  # TODO: implementation
         else:
-            self.service.spreadsheets().values().update(spreadsheetId=self.spreadsheetId,
+            list(self.service.spreadsheets().values()).update(spreadsheetId=self.spreadsheetId,
                 range=range_formated, body={'values': data}, valueInputOption=value_input).execute()
 
     def read_data_in_range(self, sheet, sheet_range=None, omit_empty=False):
@@ -62,7 +62,7 @@ class SpreadsheetManager:
         Returns:
             list: Data stored in sheet's specified range.
         """
-        response = self.service.spreadsheets().values().get(spreadsheetId=self.spreadsheetId,
+        response = list(self.service.spreadsheets().values()).get(spreadsheetId=self.spreadsheetId,
             range=self.format_range(sheet, sheet_range), valueRenderOption='UNFORMATTED_VALUE').execute()
         if 'values' in response and not omit_empty:
             return [val[0] if len(val) == 1 else {0: None}.get(len(val), val) for val in response['values']]
@@ -107,7 +107,7 @@ class SpreadsheetManager:
 #            }
 #            self.pipeline.append(data)
 #        else:
-        self.service.spreadsheets().values().append(spreadsheetId=self.spreadsheetId,
+        list(self.service.spreadsheets().values()).append(spreadsheetId=self.spreadsheetId,
                 range=sheet, body={'values': data}, valueInputOption=value_input).execute()
 
     def delete_data(self, sheet, sheet_range=None):
@@ -117,7 +117,7 @@ class SpreadsheetManager:
             sheet_range (:obj: `tuple` of :obj:`tuple` of :obj: `int`, optional): A tuple with two coordinates which delimitate a sheet range for delete it, all sheet by default.
             sheet_range (str, optional): Another implementation of sheet range which suports excel range format, all sheet by default.
         """
-        self.service.spreadsheets().values().clear(spreadsheetId=self.spreadsheetId,
+        list(self.service.spreadsheets().values()).clear(spreadsheetId=self.spreadsheetId,
             range=self.format_range(sheet, sheet_range), body={}).execute()
 
     def update_borders(self, sheet, style, width, color=name_to_rgb('black'), alpha=None, sheet_range=None, top=True, bottom=True, left=True, right=True, inner_horizontal=True, inner_vertical=True):
@@ -623,7 +623,7 @@ class SpreadsheetManager:
                     credentials = tools.run_flow(flow, store)
                 except:
                     credentials = tools.run(flow, store)
-            print('Storing credentials to ' + credential_path)
+            print(('Storing credentials to ' + credential_path))
         return credentials
 
     def get_service(self):
